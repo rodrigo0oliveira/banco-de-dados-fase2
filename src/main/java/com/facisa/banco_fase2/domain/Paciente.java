@@ -10,7 +10,7 @@ import java.util.Set;
 public class Paciente {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String nome;
@@ -33,6 +33,8 @@ public class Paciente {
 
     @OneToMany(mappedBy = "paciente")
     private Set<Consulta> consultas;
+
+    public Paciente(){}
 
     public Paciente(String nome, String cpf, Date data_nascimento, String telefone, String email) {
         this.nome = nome;

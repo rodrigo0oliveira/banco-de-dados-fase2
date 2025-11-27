@@ -10,13 +10,15 @@ import java.sql.Timestamp;
 public class PagamentoConsulta {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(precision = 10,scale = 2)
     private BigDecimal valor;
 
     private Timestamp data_hora;
+
+    private Boolean realizado;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "consulta_id",nullable = false,unique = true)

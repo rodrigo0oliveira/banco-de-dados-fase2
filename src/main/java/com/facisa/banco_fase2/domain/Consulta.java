@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 public class Consulta {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(precision = 10,scale = 2)
@@ -32,6 +32,9 @@ public class Consulta {
 
     @OneToOne(mappedBy = "consulta")
     private PagamentoConsulta pagamentoConsulta;
+
+    public Consulta(){
+    }
 
     public Consulta(BigDecimal valor, Timestamp data_hora_fim, Timestamp data_hora_inicio, Boolean realizado, Medico medico, Paciente paciente) {
         this.valor = valor;

@@ -18,6 +18,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,15 +37,30 @@ public class ConsultaService {
     @Autowired
     private  ConsultaRepository consultaRepository;
 
-    public ResponseConsultaDto createConsulta(ConsultaDto dto) throws BadRequestException {
-        Medico medico = medicoRepository.findById(dto.medicoId()).orElseThrow(()-> new BadRequestException("Medico nao encontrado!"));
-        Paciente paciente = pacienteRepository.findById(dto.pacienteId()).orElseThrow(()-> new BadRequestException("Paciente nao encontrado!"));
+    public ResponseConsultaDto createConsulta(ConsultaDto dto) {
+        try{
+            Medico medico = medicoRepository.findById(dto.medicoId()).orElseThrow(()-> new BadRequestException("Medico nao encontrado!"));
+            Paciente paciente = pacienteRepository.findById(dto.pacienteId()).orElseThrow(()-> new BadRequestException("Paciente nao encontrado!"));
 
-        Consulta consulta = ConsultaMapper.toDomain(new ConsultaRow(dto.valor(),dto.dataHoraInicio(),dto.dataHoraFim(),medico,paciente));
+            Timestamp beginTimestamp = Timestamp.valueOf(dto.dataHoraInicio());
+            Timestamp endTimestamp = Timestamp.valueOf(dto.dataHoraFim());
 
-        Consulta created = consultaRepository.save(consulta);
+            boolean isAvailable = medicoRepository.callFunctionIsMedicoAvailable(medico.getId(),beginTimestamp,endTimestamp);
 
-        return ConsultaMapper.toResponse(created);
+            if(!isAvailable){
+                throw new BadRequestException("Medico nao disponivel no horario informado!");
+            }
+
+            Consulta consulta = ConsultaMapper.toDomain(new ConsultaRow(dto.valor(),beginTimestamp,endTimestamp,medico,paciente));
+
+            Consulta created = consultaRepository.save(consulta);
+
+            return ConsultaMapper.toResponse(created);
+        }catch(BadRequestException e){
+            throw new RuntimeException(e.getMessage());
+        }catch(DataAccessException e){
+            throw new RuntimeException(e.getRootCause().getMessage());
+        }
     }
 
     public ResponseConsultaDto getById(Integer id) throws BadRequestException {
@@ -63,8 +81,8 @@ public class ConsultaService {
         Paciente paciente = pacienteRepository.findById(dto.pacienteId()).orElseThrow(()-> new BadRequestException("Paciente nao encontrado!"));
         Optional.of(paciente).ifPresent(consulta::setPaciente);
         Optional.of(medico).ifPresent(consulta::setMedico);
-        Optional.ofNullable(dto.dataHoraInicio()).ifPresent(consulta::setData_hora_inicio);
-        Optional.ofNullable(dto.dataHoraFim()).ifPresent(consulta::setData_hora_fim);
+        Optional.of(Timestamp.valueOf(dto.dataHoraInicio())).ifPresent(consulta::setData_hora_inicio);
+        Optional.of(Timestamp.valueOf(dto.dataHoraFim())).ifPresent(consulta::setData_hora_fim);
         Optional.ofNullable(dto.valor()).ifPresent(consulta::setValor);
 
         Consulta updated = consultaRepository.save(consulta);

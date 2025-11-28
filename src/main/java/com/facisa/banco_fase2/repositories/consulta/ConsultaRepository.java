@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface ConsultaRepository extends JpaRepository<Consulta,Integer> {
 
     @Query(value = "call prc_finaliza_consulta(:id)" ,nativeQuery = true)
-    void callProcedureFinalizaConsulta(@Param("id") Integer id);
+    boolean callProcedureFinalizaConsulta(@Param("id") Integer id);
 }

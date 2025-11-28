@@ -24,7 +24,7 @@ public class ConsultaController {
             ResponseConsultaDto consulta = consultaService.createConsulta(dto);
 
             return ResponseEntity.status(201).body(consulta);
-        } catch (BadRequestException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }
     }

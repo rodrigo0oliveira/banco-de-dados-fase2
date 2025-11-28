@@ -12,10 +12,14 @@ import com.facisa.banco_fase2.repositories.consulta.ConsultaRepository;
 import com.facisa.banco_fase2.repositories.medico.MedicoRepository;
 import com.facisa.banco_fase2.repositories.paciente.PacienteRepository;
 import org.apache.coyote.BadRequestException;
+import org.hibernate.JDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -57,8 +61,6 @@ public class ConsultaService {
 
         Medico medico = medicoRepository.findById(dto.medicoId()).orElseThrow(()-> new BadRequestException("Medico nao encontrado!"));
         Paciente paciente = pacienteRepository.findById(dto.pacienteId()).orElseThrow(()-> new BadRequestException("Paciente nao encontrado!"));
-
-        Optional.ofNullable(dto.realizado()).ifPresent(consulta::setRealizado);
         Optional.of(paciente).ifPresent(consulta::setPaciente);
         Optional.of(medico).ifPresent(consulta::setMedico);
         Optional.ofNullable(dto.dataHoraInicio()).ifPresent(consulta::setData_hora_inicio);
@@ -72,5 +74,20 @@ public class ConsultaService {
 
     public void deleteById(Integer id){
         consultaRepository.deleteById(id);
+    }
+
+    public String finalizaConsulta(Integer id){
+        try{
+            consultaRepository.findById(id).orElseThrow(()-> new BadRequestException("Consulta nao encontrada!"));
+
+            consultaRepository.callProcedureFinalizaConsulta(id);
+
+            return "Consulta finalizada com sucesso";
+        }catch(BadRequestException e){
+            throw new RuntimeException(e.getMessage());
+        }
+        catch(DataAccessException e){
+            throw new RuntimeException(e.getRootCause().getMessage());
+        }
     }
 }

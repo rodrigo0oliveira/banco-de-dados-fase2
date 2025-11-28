@@ -66,4 +66,15 @@ public class ConsultaController {
             return ResponseEntity.status(400).body("Erro ao deletar consulta: " + e.getMessage());
         }
     }
+
+    @PutMapping("/finaliza/{id}")
+    public ResponseEntity<String> finalizaConsulta(@PathVariable Integer id){
+        try{
+            System.out.println(id);
+            String message = consultaService.finalizaConsulta(id);
+            return ResponseEntity.ok(message);
+        }catch(Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
 }

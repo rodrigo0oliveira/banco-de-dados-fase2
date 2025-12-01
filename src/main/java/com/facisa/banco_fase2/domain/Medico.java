@@ -28,6 +28,15 @@ public class Medico {
     @OneToMany(mappedBy = "medico")
     private Set<Consulta> consultas;
 
+    public Medico() {}
+
+    public Medico(String nome, String cpf, Endereco endereco,Set<Especialidade> especialidades) {
+        this.nome = nome;
+        this.cpf = cpf;
+        this.endereco = endereco;
+        this.especialidades = especialidades;
+    }
+
     public Integer getId() {
         return id;
     }

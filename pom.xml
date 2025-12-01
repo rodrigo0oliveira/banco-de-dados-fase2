@@ -85,7 +85,7 @@
 				<artifactId>flyway-maven-plugin</artifactId>
 				<version>11.14.1</version>
 				<configuration>
-					<url>jdbc:postgresql://localhost:5432/banco_fase2</url>
+					<url>jdbc:postgresql://localhost:5432/fase2_database</url>
 					<user>postgres</user>
 					<password>postgres</password>
 					<cleanDisabled>false</cleanDisabled>

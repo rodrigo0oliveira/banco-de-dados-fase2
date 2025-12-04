@@ -25,7 +25,7 @@ Antes de rodar o projeto, você precisa ter instalado:
  git clone https://github.com/rodrigo0oliveira/database_fase2.git
 ```
 ```
- cd fase2_database
+ cd database_fase2
 ```
 ```
  mvn spring-boot:run

@@ -9,6 +9,7 @@ import com.facisa.banco_fase2.dtos.consulta.UpdateConsultaDto;
 import com.facisa.banco_fase2.mappers.consulta.ConsultaMapper;
 import com.facisa.banco_fase2.mappers.consulta.ConsultaRow;
 import com.facisa.banco_fase2.repositories.consulta.ConsultaRepository;
+import com.facisa.banco_fase2.repositories.consulta.CustomConsultaRepository;
 import com.facisa.banco_fase2.repositories.medico.MedicoRepository;
 import com.facisa.banco_fase2.repositories.paciente.PacienteRepository;
 import com.facisa.banco_fase2.repositories.pagamento_consulta.PagamentoConsultaRepository;
@@ -33,6 +34,9 @@ public class ConsultaService {
 
     @Autowired
     private  ConsultaRepository consultaRepository;
+
+    @Autowired
+    private CustomConsultaRepository customConsultaRepository;
 
     @Autowired
     private PagamentoConsultaRepository pagamentoConsultaRepository;
@@ -116,18 +120,17 @@ public class ConsultaService {
         consultaRepository.deleteById(id);
     }
 
+    @Transactional
     public String finalizaConsulta(Integer id){
         try{
             consultaRepository.findById(id).orElseThrow(()-> new BadRequestException("Consulta nao encontrada!"));
 
-            consultaRepository.callProcedureFinalizaConsulta(id);
+            customConsultaRepository.callProcedureFinalizaConsulta(id);
 
             return "Consulta finalizada com sucesso";
         }catch(BadRequestException e){
+            System.out.println("bad");
             throw new RuntimeException(e.getMessage());
-        }
-        catch(DataAccessException e){
-            throw new RuntimeException(e.getRootCause().getMessage());
         }
     }
 }
